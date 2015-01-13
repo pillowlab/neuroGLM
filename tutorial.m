@@ -5,7 +5,7 @@ unitOfTime = 'ms';
 binSize = 1;
 
 %% Specify the fields to load
-expt = buildGLM.initExperiment(unitOfTime, binSize, 'tutorial');
+expt = buildGLM.initExperiment(unitOfTime, binSize, [], rawData.param);
 expt = buildGLM.addContinuous(expt, 'LFP', 'Local Field Potential', 1); % continuous obsevation over time
 expt = buildGLM.addContinuous(expt, 'eyepos', 'Eye Position', 2); % 2 dimensional observation
 expt = buildGLM.addTiming(expt, 'dotson', 'Motion Dots Onset'); % events that happen 0 or more times per trial (sparse)

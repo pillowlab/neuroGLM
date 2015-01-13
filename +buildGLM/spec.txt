@@ -7,6 +7,12 @@
 .meta.type.fieldname: 'string' - continuous/timing/spike train/value
 .meta.dim.fieldname: [1] - dimension of corresponding continuous data
 .trial(k).fieldname: [1] or [n] or [n x p x ...]
+.trial(k).meta: (any) - any meta data associated with the trial
+.trial(k).duration: [1] duration of this trial
+
+All timings within the trial are relative -- beginning of the trial is 0,
+and do not exceed the duration of the trial. The number of bins within a
+trial is `ceil(duration/binSize)`.
     
 == DesignSpec
 

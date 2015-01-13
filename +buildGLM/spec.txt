@@ -1,12 +1,13 @@
 == Experiment Struct
 A collection of Trials. Trials are sections of continuous recording.
 
-.global.unitOfTime: 'string' - represent the unit of time
-.global.binSize: [1] - duration of a time bin
-.global.id: 'string' - unique ID for the experiment
-.meta.desc.fieldname: 'string' - longer description
-.meta.type.fieldname: 'string' - continuous/timing/spike train/value
-.meta.dim.fieldname: [1] - dimension of corresponding continuous data
+.unitOfTime: 'string' - represent the unit of time
+.binSize: [1] - duration of a time bin
+.binfun: @(t) ceil(t/expt.binSize) - consistent binning
+.id: 'string' - unique ID for the experiment
+.desc.fieldname: 'string' - longer description
+.type.fieldname: 'string' - continuous/timing/spike train/value
+.dim.fieldname: [1] - dimension of corresponding continuous data
 .trial(k).fieldname: [1] or [n] or [n x p x ...]
 .trial(k).meta: (any) - any meta data associated with the trial
 .trial(k).duration: [1] duration of this trial
@@ -20,12 +21,13 @@ Tells you how to form the design matrix for analysis from the Experiment.
 
 .covar(k).label 'str' - short description of the covariate
 .covar(k).desc 'str' optional - long description of the covariate
-.covar(k).cond: @(expt, trial) -> boolean
-.covar(k).value: @(expt, trial) -> (1)
-.covar(k).basis: Basis Struct (see below)
+.covar(k).cond: @(trial) -> boolean
+.covar(k).value: @(trial) -> [1] or [n x ...]
+.covar(k).edim: [1] - number of columns it expands to in the design matrix
+.covar(k).basisHandle: @(trial, nT) -> [nT x edim] (sparse)
 .covar(k).plotOpts: {} (option) - for consistent plotting
+.edim: [1] - total dimension of the expanded covariates
+	    this is equal to the width of the design matrix
 
 == Basis Struct
 
-.edim: [1] - number of columns it expands to in the design matrix
-.handle: @(trial, nT) -> [nT x edim] (sparse)

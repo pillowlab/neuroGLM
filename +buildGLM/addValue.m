@@ -13,12 +13,12 @@ if ~isstruct(expt)
     error('First argument must be a structure created from buildGLM.initExperiment');
 end
 
-if isfield(expt.meta.type, label) || isfield(expt.meta.desc, label)
+if isfield(expt.type, label) || isfield(expt.desc, label)
     error('[%s] already registered in this experiment structure');
 end
 
-expt.meta.desc.(label) = vardesc;
-expt.meta.type.(label) = 'value';
+expt.desc.(label) = vardesc;
+expt.type.(label) = 'value';
 
 if nargin > 3
     if ~isfield(expt.meta.type, associatedTiming)
@@ -29,10 +29,10 @@ if nargin > 3
         error('The associated variable must be of timing-type');
     end
     
-    expt.meta.valueMap.(associatedTiming) = label;
-    expt.meta.timingMap.(label) = associatedTiming;
+    expt.valueMap.(associatedTiming) = label;
+    expt.timingMap.(label) = associatedTiming;
 else
-    expt.meta.timingMap.(label) = [];
+    expt.timingMap.(label) = [];
 end
 
 if nargout < 1

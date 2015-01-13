@@ -55,7 +55,7 @@ buildGLM.summarizeDesignSpec(dspec); % print out the current configuration
 
 %% Compile the data into 'DesignMatrix' structure
 trialIndices = 1:(nTrial-1); % use all trials except the last one
-dm = buildGLM.compileSparseDesignMatrix(expt, dspec, trialIndices);
+dm = buildGLM.compileSparseDesignMatrix(dspec, trialIndices);
 
 buildGLM.visualizeDesignMatrix(dm, 1); % optionally plot the first trial
 

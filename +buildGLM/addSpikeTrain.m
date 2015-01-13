@@ -13,12 +13,12 @@ if ~isstruct(expt)
     error('First argument must be a structure created from buildGLM.initExperiment');
 end
 
-if isfield(expt.meta.type, label) || isfield(expt.meta.desc, label)
+if isfield(expt.type, label) || isfield(expt.desc, label)
     error('[%s] already registered in this experiment structure');
 end
 
-expt.meta.desc.(label) = vardesc;
-expt.meta.type.(label) = 'spike train';
+expt.desc.(label) = vardesc;
+expt.type.(label) = 'spike train';
 
 if nargout < 1
     error('Output must be assigned back to an experiment structure');

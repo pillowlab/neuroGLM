@@ -14,9 +14,10 @@ assert(binSize > 0);
 assert(ischar(unitOfTime), 'Put a string for unit');
 
 expt = struct('unitOfTime', unitOfTime, 'binSize', binSize);
-expt.meta.type = struct();
-expt.meta.desc = struct();
-expt.meta.dim = struct();
+expt.binfun = @(t) ceil(t/expt.binSize);
+expt.type = struct();
+expt.desc = struct();
+expt.dim = struct();
 
 if nargin > 2 || isempty(uniqueID)
     expt.id = uniqueID;

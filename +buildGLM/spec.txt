@@ -1,0 +1,17 @@
+== Experiment
+
+.global.unitOfTime: 'string' - represent the unit of time
+.global.binSize: [1] - duration of a time bin
+.global.id: 'string' - unique ID for the experiment
+.meta.desc.fieldname: 'string' - longer description
+.meta.type.fieldname: 'string' - continuous/timing/spike train/value
+.meta.dim.fieldname: [1] - dimension of corresponding continuous data
+.trial(k).fieldname: [1] or [n] or [n x p x ...]
+    
+== DesignSpec
+
+.covar(k).name:
+.covar(k).cond: @(expt, trial) -> boolean
+.covar(k).basisHandle: @(expt, trial, duration) -> [T x n] (sparse)
+.covar(k).value: @(expt, trial) -> (1)
+.covar(k).plotOpt: 'string' (option)

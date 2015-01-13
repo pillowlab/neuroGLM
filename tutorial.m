@@ -5,15 +5,15 @@ unitOfTime = 'ms';
 binSize = 1;
 
 %% Specify the fields to load
-expt = initExperiment(unitOfTime, binSize);
-expt = addContinuous(expt, 'LFP', 1, 'Local Field Potential'); % continuous obsevation over time
-expt = addContinuous(expt, 'eyepos', 2, 'Eye Position');
-expt = addTiming(expt, 'dotson', 'Motion Dots Onset'); % events that happen 0 or more times per trial (sparse)
-expt = addTiming(expt, 'dotsoff', 'Motion Dots Offset');
-expt = addTiming(expt, 'saccade', 'Saccade Timing');
-expt = addSpikeTrain(expt, 'sptrain', 'Our Neuron'); % Spike train!!!
-expt = addValue(expt, 'coh', 'Coherence'); % information on the trial, but not associated with time
-expt = addValue(expt, 'choice', 'Direction of Choice');
+expt = buildGLM.initExperiment(unitOfTime, binSize);
+expt = buildGLM.addContinuous(expt, 'LFP', 'Local Field Potential', 1); % continuous obsevation over time
+expt = buildGLM.addContinuous(expt, 'eyepos', 'Eye Position', 2); % 2 dimensional observation
+expt = buildGLM.addTiming(expt, 'dotson', 'Motion Dots Onset'); % events that happen 0 or more times per trial (sparse)
+expt = buildGLM.addTiming(expt, 'dotsoff', 'Motion Dots Offset');
+expt = buildGLM.addTiming(expt, 'saccade', 'Saccade Timing');
+expt = buildGLM.addSpikeTrain(expt, 'sptrain', 'Our Neuron'); % Spike train!!!
+expt = buildGLM.addValue(expt, 'coh', 'Coherence'); % information on the trial, but not associated with time
+expt = buildGLM.addValue(expt, 'choice', 'Direction of Choice');
 
 %% Convert the raw data into the experiment structure
 for kTrial = 1:nTrials

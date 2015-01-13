@@ -17,14 +17,13 @@ Downloading the repository
      ```git clone git@github.com:pillowlab/neuroGLM.git```
 
 - **In browser:**   click to
-  [Download ZIP](https://github.com/jpillow/BinaryPursuitSpikeSorting/archive/master.zip)
+  [Download ZIP](https://github.com/pillowlab/neuroGLM/archive/master.zip)
   and then unzip archive
 
 
 Example Script
 -
-Open ``RUNME_bpspikesorting.m`` to see it in action using a simulated
-dataset
+Open ``tutorial.m`` to see it in action using a simulated dataset
 
 ##Reference
 

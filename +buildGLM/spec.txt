@@ -1,4 +1,5 @@
-== Experiment
+== Experiment Struct
+A collection of Trials. Trials are sections of continuous recording.
 
 .global.unitOfTime: 'string' - represent the unit of time
 .global.binSize: [1] - duration of a time bin
@@ -15,9 +16,16 @@ and do not exceed the duration of the trial. The number of bins within a
 trial is `ceil(duration/binSize)`.
     
 == DesignSpec
+Tells you how to form the design matrix for analysis from the Experiment.
 
-.covar(k).name:
+.covar(k).label 'str' - short description of the covariate
+.covar(k).desc 'str' optional - long description of the covariate
 .covar(k).cond: @(expt, trial) -> boolean
-.covar(k).basisHandle: @(expt, trial, duration) -> [T x n] (sparse)
 .covar(k).value: @(expt, trial) -> (1)
-.covar(k).plotOpt: 'string' (option)
+.covar(k).basis: Basis Struct (see below)
+.covar(k).plotOpts: {} (option) - for consistent plotting
+
+== Basis Struct
+
+.edim: [1] - number of columns it expands to in the design matrix
+.handle: @(trial, nT) -> [nT x edim] (sparse)

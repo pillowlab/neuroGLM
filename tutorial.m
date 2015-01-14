@@ -37,6 +37,8 @@ bases = basisFactory.makeNonlinearRaisedCos(10, expt.binSize, [0 500], 2);
 offset = 0;
 dspec = buildGLM.addCovariate(dspec, 'dotson', [], bases, offset);
 
+%%
+
 % 5 ms wide raised cosine basis functions tiling 300 ms length, and with a 20 ms anti-causal offset
 % See tutorials in basisFactory for more examples
 dspec = buildGLM.addCovariate(dspec, 'saccade', [], basisFactory.raisedCosine(300, 5, -20));
@@ -62,11 +64,11 @@ dm = buildGLM.compileSparseDesignMatrix(dspec, trialIndices);
 buildGLM.visualizeDesignMatrix(dm, 1); % optionally plot the first trial
 
 %% Get the spike trains back to regress against
-y = getDataField(expt, 'sptrain', trialIndices);
+y = buildGLM.getDataField(expt, 'sptrain', trialIndices);
 
 %% Specify the model
 hasBias = true;
-model = buildModel(dspec, 'Poisson', 'exp', hasBias);
+model = buildGLM.buildModel(dspec, 'Poisson', 'exp', hasBias);
 
 %% Do regression
 [w, stats] = fitGLM(model, dm, y);

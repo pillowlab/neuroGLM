@@ -23,13 +23,13 @@ for kTrial = trialIndices
             continue;
         end
         
-        stim = covar.value(expt.trial(kTrial), nT); % either dense or sparse
+        stim = covar.stim(expt.trial(kTrial), nT); % either dense or sparse
         
         if isfield(covar, 'basis') && ~isempty(covar.basis)
             miniX(:, sidx) = basisFactory.convBasis(stim, covar.basis, covar.offset);
         else
             miniX(:, sidx) = stim;
-        end        
+        end
     end
     growingX = [growingX; sparse(miniX)]; %#ok<AGROW>
 end

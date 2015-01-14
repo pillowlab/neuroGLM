@@ -21,6 +21,7 @@ for kTrial = 1:nTrials
     trial(kTrial).coh = sign(rand - 0.5) * 2^ceil(rand*8);
     trial(kTrial).choice = round(rand);
     trial(kTrial).sptrain = sort(rand(poissrnd(lambda * duration), 1) * duration);
+    trial(kTrial).sptrain2 = sort(rand(poissrnd(lambda * duration), 1) * duration);
     trial(kTrial).meta = rand;
 end
 

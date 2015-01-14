@@ -12,6 +12,7 @@ expt = buildGLM.addTiming(expt, 'dotson', 'Motion Dots Onset'); % events that ha
 expt = buildGLM.addTiming(expt, 'dotsoff', 'Motion Dots Offset');
 expt = buildGLM.addTiming(expt, 'saccade', 'Saccade Timing');
 expt = buildGLM.addSpikeTrain(expt, 'sptrain', 'Our Neuron'); % Spike train!!!
+expt = buildGLM.addSpikeTrain(expt, 'sptrain2', 'Neighbor Neuron');
 expt = buildGLM.addValue(expt, 'coh', 'Coherence'); % information on the trial, but not associated with time
 expt = buildGLM.addValue(expt, 'choice', 'Direction of Choice');
 
@@ -30,12 +31,23 @@ end
 % Each covariate to include in the model and analysis is specified.
 
 dspec = buildGLM.initDesignSpec(expt);
-dspec = buildGLM.addCovariate(dspec, 'LFP'); % include LFP as a covariate
 
-% 5 ms wide raised cosine basis functions tiling 100 ms
+%% Instantaneous Raw Signal without basis
+dspec = buildGLM.addCovariateRaw(dspec, 'LFP');
+
+%% Spike history
+dspec = buildGLM.addCovariateSpiketrain(dspec, 'hist', 'sptrain', 'History filter');
+
+%% Coupling filter
+dspec = buildGLM.addCovariateSpiketrain(dspec, 'cp2', 'sptrain2', 'Coupling from neuron 2');
+
+%% Duration boxcar
+dspec = buildGLM.addCovariateBoxcar(dspec, 'dots', 'dotson', 'dotsoff', 'Motion dots stim');
+
+%% 5 ms wide raised cosine basis functions tiling 100 ms
 bases = basisFactory.makeNonlinearRaisedCos(10, expt.binSize, [0 500], 2);
 offset = 0;
-dspec = buildGLM.addCovariate(dspec, 'dotson', [], bases, offset);
+dspec = buildGLM.addCovariate(dspec, 'dotson', [], @(trial, nT) basisFactory.deltaStim(expt.binfun(trial.dotsoff), nT), bases, offset);
 
 %%
 
@@ -58,10 +70,12 @@ end
 buildGLM.summarizeDesignSpec(dspec); % print out the current configuration
 
 %% Compile the data into 'DesignMatrix' structure
-trialIndices = 1:(nTrial-1); % use all trials except the last one
+trialIndices = 1:(nTrials-1); % use all trials except the last one
 dm = buildGLM.compileSparseDesignMatrix(dspec, trialIndices);
 
-buildGLM.visualizeDesignMatrix(dm, 1); % optionally plot the first trial
+%%
+figure(742); clf; imagesc(dm.X(1:binfun(expt.trial(1).duration),:));
+%buildGLM.visualizeDesignMatrix(dm, 1); % optionally plot the first trial
 
 %% Get the spike trains back to regress against
 y = buildGLM.getDataField(expt, 'sptrain', trialIndices);

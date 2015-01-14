@@ -24,10 +24,16 @@ Tells you how to form the design matrix for analysis from the Experiment.
 .covar(k).cond: @(trial) -> boolean
 .covar(k).value: @(trial) -> [1] or [n x ...]
 .covar(k).edim: [1] - number of columns it expands to in the design matrix
-.covar(k).basisHandle: @(trial, nT) -> [nT x edim] (sparse)
+.covar(k).basis: Basis structure (see below)
 .covar(k).plotOpts: {} (option) - for consistent plotting
 .edim: [1] - total dimension of the expanded covariates
 	    this is equal to the width of the design matrix
 
-== Basis Struct
+== Basis Structure
 
+basis.type: name of the function that generated the basis
+basis.param: generation parameters (internal)
+basis.B: [T x edim] each column is the basis to be convolved with stimulus
+basis.edim: number of temporal basis functions
+basis.tr: [T x 1] temporal axis
+basis.(other_fields): any extra information

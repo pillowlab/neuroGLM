@@ -2,9 +2,6 @@ function dm = compileSparseDesignMatrix(dspec, trialIndices)
 % Compile information from experiment according to given DesignSpec
 
 expt = dspec.expt;
-
-nCov = numel(dspec.covar);
-
 subIdxs = buildGLM.getGroupIndicesFromDesignSpec(dspec);
 
 totalT = sum(ceil([expt.trial(trialIndices).duration]/expt.binSize));
@@ -18,26 +15,23 @@ for kTrial = trialIndices
     
     miniX = zeros(nT, dspec.edim); % pre-allocate a dense matrix for each trial
     
-    for kCov = 1:nCov % for each covariate
+    for kCov = 1:numel(dspec.covar) % for each covariate
         covar = dspec.covar(kCov);
         sidx = subIdxs{kCov};
         
-        % Continuous-type data
-        if covar.isContinuous
-            miniX(:, sidx) = covar.value(expt.trial(kTrial));
+        if isfield(covar, 'cond') && ~isempty(covar.cond) && ~covar.cond(expt.trial(kTrial))
             continue;
         end
         
-        % Timing-type or spike-train-type data
-        if ~isfield(covar, 'cond') || covar.cond(kTrial)
-            miniX(:, sidx) = covar.basisHandle(expt.trial(kTrial), nT);
-            if ~isfield(covar, 'value')
-                miniX(:, sidx) = ...
-                    bsxfun(@times, miniX(:, sidx), covar.value(kTrial));
-            end
-        end
+        stim = covar.value(expt.trial(kTrial), nT); % either dense or sparse
+        
+        if isfield(covar, 'basis') && ~isempty(covar.basis)
+            miniX(:, sidx) = basisFactory.convBasis(stim, covar.basis, covar.offset);
+        else
+            miniX(:, sidx) = stim;
+        end        
     end
-    growingX = [growingX; sparse(miniX)];
+    growingX = [growingX; sparse(miniX)]; %#ok<AGROW>
 end
 
 dm.X = growingX;

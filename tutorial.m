@@ -33,7 +33,9 @@ dspec = buildGLM.initDesignSpec(expt);
 dspec = buildGLM.addCovariate(dspec, 'LFP'); % include LFP as a covariate
 
 % 5 ms wide raised cosine basis functions tiling 100 ms
-dspec = buildGLM.addCovariate(dspec, 'dotson', [], basisFactory.raisedCosine(100, 5));
+bases = basisFactory.makeNonlinearRaisedCos(10, expt.binSize, [0 500], 2);
+offset = 0;
+dspec = buildGLM.addCovariate(dspec, 'dotson', [], bases, offset);
 
 % 5 ms wide raised cosine basis functions tiling 300 ms length, and with a 20 ms anti-causal offset
 % See tutorials in basisFactory for more examples

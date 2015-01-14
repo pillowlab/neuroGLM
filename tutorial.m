@@ -2,7 +2,7 @@
 rawData = load('exampleData.mat'); % run tutorial_exampleData to generate this
 nTrials = rawData.nTrials; % number of trials
 unitOfTime = 'ms';
-binSize = 1;
+binSize = 1; % TODO some continuous observations might need up/down-sampling if binSize is not 1!?
 
 %% Specify the fields to load
 expt = buildGLM.initExperiment(unitOfTime, binSize, [], rawData.param);
@@ -29,37 +29,33 @@ end
 
 %% Build 'designSpec' which specifies how to generate the design matrix
 % Each covariate to include in the model and analysis is specified.
-
 dspec = buildGLM.initDesignSpec(expt);
+bs = basisFactory.makeSmoothTemporalBasis('boxcar', 100, 10, expt.binfun);
+bs.B = 0.1 * bs.B;
 
 %% Instantaneous Raw Signal without basis
-dspec = buildGLM.addCovariateRaw(dspec, 'LFP');
+dspec = buildGLM.addCovariateRaw(dspec, 'LFP', [], bs);
 
 %% Spike history
 dspec = buildGLM.addCovariateSpiketrain(dspec, 'hist', 'sptrain', 'History filter');
 
 %% Coupling filter
-dspec = buildGLM.addCovariateSpiketrain(dspec, 'cp2', 'sptrain2', 'Coupling from neuron 2');
+dspec = buildGLM.addCovariateSpiketrain(dspec, 'coupling', 'sptrain2', 'Coupling from neuron 2');
 
 %% Duration boxcar
 dspec = buildGLM.addCovariateBoxcar(dspec, 'dots', 'dotson', 'dotsoff', 'Motion dots stim');
 
-%% 5 ms wide raised cosine basis functions tiling 100 ms
-bases = basisFactory.makeNonlinearRaisedCos(10, expt.binSize, [0 500], 2);
-offset = 0;
-dspec = buildGLM.addCovariate(dspec, 'dotson', [], @(trial, nT) basisFactory.deltaStim(expt.binfun(trial.dotsoff), nT), bases, offset);
+%% Timing Event
+bs.B = 100 * bs.B;
+dspec = buildGLM.addCovariateTiming(dspec, 'saccade', [], [], bs);
+
+%% Coherence dependent
 
 %%
 
 % 5 ms wide raised cosine basis functions tiling 300 ms length, and with a 20 ms anti-causal offset
 % See tutorials in basisFactory for more examples
 dspec = buildGLM.addCovariate(dspec, 'saccade', [], basisFactory.raisedCosine(300, 5, -20));
-
-% spike history, make sure it's is strictly causal
-dspec = buildGLM.addCovariate(dspec, 'hist', 'sptrain', basisFactory.raisedCosine(300, 5, binSize, 'log'));
-
-% Duration-type that starts at dotson and ends at dotsoff
-dspec = buildGLM.addCovariate(dspec, 'dotsDuration', [], basisFactory.boxcarDuration(@(x,k) [x.trial(k).dotson, x.trial(k).dotsoff]));
 
 % Duration-type that starts at dotson and ends at dotsoff and has height
 % proportional to the logarithm of coherence

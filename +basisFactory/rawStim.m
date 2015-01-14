@@ -1,3 +1,3 @@
 function stim = rawStim(label)
 
-stim = @(trial, nT) trial.(label);
+stim = @(trial, expt) trial.(label);

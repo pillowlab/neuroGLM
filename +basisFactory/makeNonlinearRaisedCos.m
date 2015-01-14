@@ -29,9 +29,8 @@ db = diff(yrnge) / (nBases-1); % spacing between raised cosine peaks
 ctrs = yrnge(1):db:yrnge(2); % centers for basis vectors
 mxt = invnl(yrnge(2)+2*db) - nlOffset; % maximum time bin
 iht = (0:binSize:mxt)';
-nt = length(iht); % number of points in iht
 ff = @(x,c,dc) (cos(max(-pi, min(pi, (x-c)*pi/dc/2))) + 1)/2;
-ihbasis = ff(repmat(nlin(iht + nlOffset), 1, nBases), repmat(ctrs, nt, 1), db);
+ihbasis = ff(repmat(nlin(iht + nlOffset), 1, nBases), repmat(ctrs, numel(iht), 1), db);
 ihctrs = invnl(ctrs);
 
 bases.type = mfilename;

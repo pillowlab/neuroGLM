@@ -22,7 +22,7 @@ Tells you how to form the design matrix for analysis from the Experiment.
 .covar(k).label 'str' - short description of the covariate
 .covar(k).desc 'str' optional - long description of the covariate
 .covar(k).cond: @(trial) -> boolean
-.covar(k).stim: @(trial) -> [1] or [n x ...]
+.covar(k).stim: @(trial, expt) -> [1] or [n x ...]
 .covar(k).basis: Basis structure (see below)
 .covar(k).offset: number of *time bins* to shift the basis functions
 .covar(k).edim: [1] - number of columns it expands to in the design matrix

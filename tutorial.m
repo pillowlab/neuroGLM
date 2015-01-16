@@ -18,7 +18,7 @@ expt = buildGLM.addValue(expt, 'choice', 'Direction of Choice');
 
 %% Convert the raw data into the experiment structure
 
-expt.trial = trial;
+expt.trial = rawData.trial;
 %{
 for kTrial = 1:nTrials
     trial = newTrial(rawData.trial(kTrial).meta, rawData.trial(kTrial).duration);
@@ -30,7 +30,8 @@ end
 %% Build 'designSpec' which specifies how to generate the design matrix
 % Each covariate to include in the model and analysis is specified.
 dspec = buildGLM.initDesignSpec(expt);
-bs = basisFactory.makeSmoothTemporalBasis('boxcar', 100, 10, expt.binfun);
+binfun = expt.binfun;
+bs = basisFactory.makeSmoothTemporalBasis('boxcar', 100, 10, binfun);
 bs.B = 0.1 * bs.B;
 
 %% Instantaneous Raw Signal without basis
@@ -46,42 +47,45 @@ dspec = buildGLM.addCovariateSpiketrain(dspec, 'coupling', 'sptrain2', 'Coupling
 dspec = buildGLM.addCovariateBoxcar(dspec, 'dots', 'dotson', 'dotsoff', 'Motion dots stim');
 
 %% Timing Event
-bs.B = 100 * bs.B;
-dspec = buildGLM.addCovariateTiming(dspec, 'saccade', [], [], bs);
+bs = basisFactory.makeSmoothTemporalBasis('boxcar', 300, 8, binfun);
+offset = -200;
+dspec = buildGLM.addCovariateTiming(dspec, 'saccade', [], [], bs, offset);
 
-%% Coherence dependent
+%% Coherence
+% a box car that depends on the coh value
+bs = basisFactory.makeSmoothTemporalBasis('raised cosine', 200, 10, binfun);
+stimHandle = @(trial, expt) trial.coh * basisFactory.boxcarStim(binfun(trial.dotson), binfun(trial.dotsoff), binfun(trial.duration));
 
-%%
+dspec = buildGLM.addCovariate(dspec, 'cohKer', 'coh-dep dots stimulus', stimHandle, bs);
 
-% 5 ms wide raised cosine basis functions tiling 300 ms length, and with a 20 ms anti-causal offset
-% See tutorials in basisFactory for more examples
-dspec = buildGLM.addCovariate(dspec, 'saccade', [], basisFactory.raisedCosine(300, 5, -20));
-
-% Duration-type that starts at dotson and ends at dotsoff and has height
-% proportional to the logarithm of coherence
-for kCoh = 1:5
-    dspec = buildGLM.addCovariate(dspec, expt, ['coh' num2str(kCoh)], basisFactory.boxcarDuration(@(x,k) [x.dotson(k), x.dotsoff(k)]), @(x) log(x.coh(k)));
-end
-
-buildGLM.summarizeDesignSpec(dspec); % print out the current configuration
+%buildGLM.summarizeDesignSpec(dspec); % print out the current configuration
 
 %% Compile the data into 'DesignMatrix' structure
-trialIndices = 1:(nTrials-1); % use all trials except the last one
+trialIndices = 1:10; %(nTrials-1); % use all trials except the last one
 dm = buildGLM.compileSparseDesignMatrix(dspec, trialIndices);
 
-%%
-figure(742); clf; imagesc(dm.X(1:binfun(expt.trial(1).duration),:));
+%% Visualize the design matrix
+endTrialIndices = cumsum(binfun([expt.trial(trialIndices).duration]));
+X = dm.X(1:endTrialIndices(3),:);
+mv = max(abs(X), [], 1); mv(isnan(mv)) = 1;
+X = bsxfun(@times, X, 1 ./ mv);
+figure(742); clf; imagesc(X);
 %buildGLM.visualizeDesignMatrix(dm, 1); % optionally plot the first trial
 
 %% Get the spike trains back to regress against
-y = buildGLM.getDataField(expt, 'sptrain', trialIndices);
+y = buildGLM.getBinnedSpikeTrain(expt, 'sptrain', trialIndices);
 
+%% Maximum likelihood estimation using glmfit
+[w, dev, stats] = glmfit(dm.X, y);
+
+%{
 %% Specify the model
 hasBias = true;
 model = buildGLM.buildModel(dspec, 'Poisson', 'exp', hasBias);
 
 %% Do regression
 [w, stats] = fitGLM(model, dm, y);
+%}
 
 %% Visualize fit
 visualizeFit(w, model, dspec, vparam(1)); % ???

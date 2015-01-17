@@ -51,5 +51,5 @@ bases.param.nBases = nBases;
 bases.param.binfun = binfun;
 bases.B = BBstm;
 bases.edim = size(bases.B, 2);
-bases.tr = ttb;
+bases.tr = ttb - 1;
 bases.centers = bcenters;

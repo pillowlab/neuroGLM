@@ -20,12 +20,16 @@ for kTrial = 1:nTrials
     trial(kTrial).saccade = 100 + ceil(rand * (duration - 100));
     trial(kTrial).coh = sign(rand - 0.5) * 2^ceil(rand*8);
     trial(kTrial).choice = round(rand);
-    trial(kTrial).sptrain = sort(rand(poissrnd(lambda * duration), 1) * duration);
-    trial(kTrial).sptrain2 = sort(rand(poissrnd(lambda * duration), 1) * duration);
+    trial(kTrial).sptrain = sort(rand(poissrnd(lambda * 0.9 * duration), 1) * duration);
+    trial(kTrial).sptrain2 = sort(rand(poissrnd(0.1 * lambda * duration), 1) * duration);
+
+    trial(kTrial).sptrain = sort([trial(kTrial).sptrain; trial(kTrial).sptrain2 + 2]);
+    trial(kTrial).sptrain(trial(kTrial).sptrain > trial(kTrial).duration) = [];
+
     trial(kTrial).meta = rand;
 end
 
-param.samplingFreq = 12000; % Hz
+param.samplingFreq = 1; % kHz
 param.monkey = 'F99';
 
 save('exampleData.mat', 'nTrials', 'trial', 'param')

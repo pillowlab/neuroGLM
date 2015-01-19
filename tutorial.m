@@ -58,6 +58,10 @@ stimHandle = @(trial, expt) trial.coh * basisFactory.boxcarStim(binfun(trial.dot
 
 dspec = buildGLM.addCovariate(dspec, 'cohKer', 'coh-dep dots stimulus', stimHandle, bs);
 
+%% 2-D eye position
+bs = basisFactory.makeSmoothTemporalBasis('raised cosine', 40, 4, binfun);
+dspec = buildGLM.addCovariateRaw(dspec, 'eyepos', [], bs);
+
 %buildGLM.summarizeDesignSpec(dspec); % print out the current configuration
 
 %% Compile the data into 'DesignMatrix' structure
@@ -77,6 +81,20 @@ y = buildGLM.getBinnedSpikeTrain(expt, 'sptrain', trialIndices);
 
 %% Maximum likelihood estimation using glmfit
 [w, dev, stats] = glmfit(dm.X, y);
+
+ws = buildGLM.combineWeights(dm, w);
+wvar = buildGLM.combineWeights(dm, stats.se.^2);
+
+fig = figure(2913); clf;
+nCovar = numel(dspec.covar);
+for kCov = 1:nCovar
+    label = dspec.covar(kCov).label;
+    subplot(nCovar, 1, kCov);
+    errorbar(ws.(label).tr, ws.(label).data, sqrt(wvar.(label).data));
+    title(label);
+end
+
+return
 
 %{
 %% Specify the model

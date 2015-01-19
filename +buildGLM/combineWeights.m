@@ -34,8 +34,12 @@ for kCov = 1:numel(dspec.covar)
 
     assert(isstruct(basis), 'Basis structure is not a structure?');
 
-    w_sub = w(startIdx(kCov) + (1:basis.edim) - 1);
-    w2_sub = sum(bsxfun(@times, basis.B, w_sub(:)'), 2);
-    wout.(covar.label).data = w2_sub;
-    wout.(covar.label).tr = (basis.tr(:, 1) + covar.offset) * binSize;
+    sdim = covar.edim / basis.edim;
+    wout.(covar.label).data = zeros(size(basis.B, 1), sdim);
+    for sIdx = 1:sdim
+	w_sub = w(startIdx(kCov) + (1:basis.edim) - 1 + basis.edim * (sIdx - 1));
+	w2_sub = sum(bsxfun(@times, basis.B, w_sub(:)'), 2);
+	wout.(covar.label).data(:, sIdx) = w2_sub;
+    end
+    wout.(covar.label).tr = ((basis.tr(:, 1) + covar.offset) * binSize) * ones(1, sdim);
 end

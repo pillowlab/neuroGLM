@@ -32,6 +32,7 @@ dspec.covar(newIdx).stim = stimHandle;
 dspec.idxmap.(covLabel) = newIdx;
 
 sdim = size(stimHandle(dspec.expt.trial(1), dspec.expt), 2);
+dspec.covar(newIdx).sdim = sdim;
 
 if nargin >= 5
     if isstruct(basisStruct)

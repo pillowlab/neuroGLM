@@ -19,13 +19,7 @@ expt = buildGLM.addValue(expt, 'choice', 'Direction of Choice');
 %% Convert the raw data into the experiment structure
 
 expt.trial = rawData.trial;
-%{
-for kTrial = 1:nTrials
-    trial = newTrial(rawData.trial(kTrial).meta, rawData.trial(kTrial).duration);
-    trial = extractDataFromStruct(trial, expt, rawData.trial(kTrial)); % assumes this special structure % TODO rename
-    expt = addTrial(expt, trial, kTrial);
-end
-%}
+%verifyTrials(expt); % checks if the formats are correct
 
 %% Build 'designSpec' which specifies how to generate the design matrix
 % Each covariate to include in the model and analysis is specified.
@@ -46,7 +40,7 @@ dspec = buildGLM.addCovariateSpiketrain(dspec, 'coupling', 'sptrain2', 'Coupling
 %% Duration boxcar
 dspec = buildGLM.addCovariateBoxcar(dspec, 'dots', 'dotson', 'dotsoff', 'Motion dots stim');
 
-%% Timing Event
+%% Acausal Timing Event
 bs = basisFactory.makeSmoothTemporalBasis('boxcar', 300, 8, binfun);
 offset = -200;
 dspec = buildGLM.addCovariateTiming(dspec, 'saccade', [], [], bs, offset);
@@ -80,8 +74,9 @@ figure(742); clf; imagesc(X);
 y = buildGLM.getBinnedSpikeTrain(expt, 'sptrain', trialIndices);
 
 %% Maximum likelihood estimation using glmfit
-[w, dev, stats] = glmfit(dm.X, y);
+[w, dev, stats] = glmfit(dm.X, y, 'poisson', 'link', 'log');
 
+%% Visualize
 ws = buildGLM.combineWeights(dm, w);
 wvar = buildGLM.combineWeights(dm, stats.se.^2);
 

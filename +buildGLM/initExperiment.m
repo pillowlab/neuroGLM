@@ -14,7 +14,7 @@ assert(binSize > 0);
 assert(ischar(unitOfTime), 'Put a string for unit');
 
 expt = struct('unitOfTime', unitOfTime, 'binSize', binSize);
-expt.binfun = @(t) ceil(t/expt.binSize);
+expt.binfun = @(t) (t == 0) + ceil(t/expt.binSize);
 expt.type = struct();
 expt.desc = struct();
 expt.dim = struct();

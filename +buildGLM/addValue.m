@@ -30,9 +30,9 @@ if nargin > 3
     end
     
     expt.valueMap.(associatedTiming) = label;
-    expt.timingMap.(label) = associatedTiming;
+    expt.valueTimingMap.(label) = associatedTiming;
 else
-    expt.timingMap.(label) = [];
+    expt.valueTimingMap.(label) = [];
 end
 
 if nargout < 1

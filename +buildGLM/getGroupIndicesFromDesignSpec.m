@@ -1,5 +1,5 @@
 function subIdxs = getGroupIndicesFromDesignSpec(dspec)
-% Cell of indices that corresponds to each covariate in the design matrix
+% Cell of column indices that corresponds to each covariate in the design matrix
 % subIdxs = getGroupIndicesFromDesignSpec(dspec)
 
 subIdxs = {};

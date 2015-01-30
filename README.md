@@ -40,9 +40,9 @@ regression.
 Consider a simple example in which a neuron encodes two experimental
 variables: the time at which a visual target appears, and the motion
 strength of a moving-dots stimulus. The regressors are
-the time at which the targets appear on each trial, and the time,
+the time at which the targets appear, and the time,
 duration, and strength ("coherence") of the moving dots on each
-trial. 
+trial.   
 
 
 

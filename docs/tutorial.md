@@ -140,13 +140,20 @@ dm.X = full(dm.X);
 # Advanced feature engineering
 
 # Regression analysis
+Once you have designed your features, and obtained the design matrix, it's finally time to do some analysis!
 
 ## Get the dependent variable
-You need
+You need to obtain the response variable of the same length as the number of rows in the design matrix to do regression. For **point process** regression, where we want to predict the observed spike train from covariates, this would be a finely binned spike train concatenated over the trials of interest:
 ```matlab
 %% Get the spike trains back to regress against
 y = buildGLM.getBinnedSpikeTrain(expt, 'sptrain', dm.trialIndices);
 ```
+
+For predicting some continuous observation, such as predicting the LFP, you can do:
+```matlab
+y = buildGLM.getResponseVariable(expt, 'LFP', dm.trialIndices);
+```
+Make sure your `y` is a column vector.
 
 ## Doing the actual regression
 You can do whatever you want to do the regression.

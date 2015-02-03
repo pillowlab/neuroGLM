@@ -1,16 +1,17 @@
 # Introduction
 
-Often times neural recordings are accompanied with various other measurements and controlled manipulations.
-For example, timing of a visual cue, auditory stimulus, behavioral measurements (button press, eye movement, EMG), time and magnitude of the reward, heart beat, on going EEG/ECoG/LFP measurements, and so on.
+Neural recordings are accompanied by various other measurements, controlled manipulations, and other meta data.
+For example, timing of a visual cue, time course of an auditory stimulus, behavioral measurements (button press, eye movement, EMG), time and magnitude of the reward, heart beat, on going EEG/ECoG/LFP measurements, and so on.
 It is cumbersome to find a representation of these covariates for regression-style analysis, especially when they are events.
-This package allows you to expand and transform your data into a design matrix such that a linear analysis could yield desired results.
+This is because events usually do not have an **instantaneous effect to the response (dependent) variable**.
+This package allows you to **expand and transform your experimental variables to a feature space as a [design matrix](http://en.wikipedia.org/wiki/Design_matrix) such that a simple linear analysis could yield desired results**.
 
 # Loading your data
 
-We assume the experimental data are observations over time, and organized into **trials**.
-If your data don't have a trial structure, in this framework you have a single trial.
-There are 4 types of variables that constitute data: *continuous*, *timing*, *spike train*, and *value*.
-This framework uses string labels to address each variable that are registered.
+We assume the experimental variables are observations over time, and organized into **trials**.
+If your data don't have a trial structure, you can put all your data in a single trial.
+There are 4 types of variables that constitute data: *spike train*, *timing*, *continuous*, and *value*.
+This framework uses string labels to address each variable later.
 
 ## Types of experimental variables
 ### Spike train
@@ -34,7 +35,7 @@ The sampling rate should match the bin size of the analysis, otherwise up-sampli
 ### Value
 
 Each trial can have a single value associated with it.
-In many cases these are 
+In many cases these are
 
 ## Registering variables to the experiment
 

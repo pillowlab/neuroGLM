@@ -16,26 +16,27 @@ This framework uses string labels to address each variable later.
 ## Types of experimental variables
 ### Spike train
 
-Spike trains are sequence of timings.
+Each spike train is a sequence of spike timings from a single neuron.
 The spike timings are relative to the beginning of the trial.
-You can have spike trains from more than one neuron.
 
 ### Timing (events)
 
 A typical trial based experiment may have a cue that indicates the beginning of a trial, cues that indicate waiting period, or presentation of a target at random times.
-These covariates are best represented as events, and the timing is recorded.
-Also, many behaviors are recorded as timing: reaction time, button press time, etc.
+These covariates are best represented as events.
+However, if two or more timings are perfectly correlated, it would be sufficient to include just one (see [Experiment Design](exptdesign.md) for ore information).
+Note that many behaviors are also recorded as timing: reaction time, button press time, etc.
 
 ### Continuous
 
 Continuous data are measured continuously over time.
-For instance, eye position of the animal may be correlated with the neuron of interest, so the experimentalist carefully measured it through out the experiment.
-The sampling rate should match the bin size of the analysis, otherwise up-sampling, or down-sampling (with appropriate filtering) is necessary.
+For instance, eye position of the animal may be correlated with the activities of neurons of the study, so the experimentalist could carefully measure it throughout the experiment.
+Note that the sampling rate should match the bin size of the analysis, otherwise up-sampling, or down-sampling (with appropriate filtering) is necessary.
 
 ### Value
 
 Each trial can have a single value associated with it.
-In many cases these are
+In many cases these are trial specific parameters such as strength of the stimulus, type of cue, or the behavioral category.
+These values can be used to build a feature space, or  to include specific feature in trials only when certain conditions are met.
 
 ## Registering variables to the experiment
 
@@ -60,6 +61,12 @@ expt = buildGLM.registerSpikeTrain(expt, 'sptrain2', 'Neighbor Neuron');
 expt = buildGLM.registerValue(expt, 'coh', 'Coherence'); % information on the trial, but not associated with time
 expt = buildGLM.registerValue(expt, 'choice', 'Direction of Choice');
 ```
+
+Note that one can omit the prefix `buildGLM.` by importing the name space via
+```matlab
+import buildGLM.*
+```
+once.
 
 ## Loading the data for each trial
 

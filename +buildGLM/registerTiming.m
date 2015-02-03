@@ -1,6 +1,6 @@
-function expt = addTiming(expt, label, vardesc)
+function expt = registerTiming(expt, label, vardesc)
 % Indicate that the experiment has an event type observation
-% expt = addTiming(expt, label, vardesc)
+% expt = registerTiming(expt, label, vardesc)
 %
 % Events can happen 0 or more times within a single trial and efficiently
 % represented by a sparse vector.

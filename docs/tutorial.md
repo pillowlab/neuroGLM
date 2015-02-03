@@ -6,6 +6,8 @@ It is cumbersome to find a representation of these covariates for regression-sty
 This is because events usually do not have an **instantaneous effect to the response (dependent) variable**.
 This package allows you to **expand and transform your experimental variables to a feature space as a [design matrix](http://en.wikipedia.org/wiki/Design_matrix) such that a simple linear analysis could yield desired results**.
 
+This tutorial will explain how to import your experimental data, and build appropriate features spaces to do fancy regression analysis easily.
+
 # Loading your data
 
 We assume the experimental variables are observations over time, and organized into **trials**.
@@ -62,14 +64,44 @@ expt = buildGLM.registerValue(expt, 'coh', 'Coherence'); % information on the tr
 expt = buildGLM.registerValue(expt, 'choice', 'Direction of Choice');
 ```
 
-Note that one can omit the prefix `buildGLM.` by importing the name space via
+Note that one can omit the prefix `buildGLM.` by importing the name space once via
 ```matlab
 import buildGLM.*
 ```
-once.
 
 ## Loading the data for each trial
 
+For each trial, we load the
+
+Once you are comfortable with the data structure, you can avoid calling the `addCovariate*` functions, and directly plug-in your data into the structure via:
+
+```matlab
+expt.trial = dataInTrialStruct;
+```
+
 # Forming your feature space
+Once you have your data loaded as an experiment object, you are now ready to specify how your experimental variables will be represented, and hence how your design matrix will be formed.
+
+## Design specification
+We start by creating a **design specification object**.
+```matlab
+dspec = buildGLM.initDesignSpec(expt);
+```
+You can have multiple such object per experiment to analyze your experiments in different ways and compare models.
+
+## Using temporal basis functions
+
+## Building the design matrix
+The ultimate output is the design matrix:
+```matlab
+dm = buildGLM.compileSparseDesignMatrix(dspec, trialIndices);
+```
+where `trialIndices` are the trials to include in making the design matrix.
+
+`dm` is a structure that contains the actual design matrix as `dm.X`. You can visualize this matrix
 
 # Advanced feature engineering
+
+# Doing the actual regression
+
+# Post regression reconstruction

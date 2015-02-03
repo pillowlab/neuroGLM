@@ -1,6 +1,6 @@
-function expt = addContinuous(expt, label, vardesc, dim)
+function expt = registerContinuous(expt, label, vardesc, dim)
 % Indicate that the experiment has a continuous observation
-% expt = addContinuous(expt, varname, vardesc, dim)
+% expt = registerContinuous(expt, varname, vardesc, dim)
 %
 %   label: 'string' - label for the observed variable
 %   vardesc: 'string' - longer description of the variable

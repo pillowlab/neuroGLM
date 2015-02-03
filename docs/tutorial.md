@@ -71,12 +71,44 @@ import buildGLM.*
 
 ## Loading the data for each trial
 
-For each trial, we load the
+For each trial, we load each of the possible covariate into the experiment structure.
 
-Once you are comfortable with the data structure, you can avoid calling the `addCovariate*` functions, and directly plug-in your data into the structure via:
+For each trial, we make a temporary object `trial` to load the data:
+```matlab
+trial = buildGLM.newTrial(expt, duration);
+```
+where `duration` is the length of the current trial in `unitOfTime`.
+
+`trial` is a structure where you can add all your covariates you have registered for the experiment as fields.
 
 ```matlab
-expt.trial = dataInTrialStruct;
+trial.dotson = rand() * duration;
+```
+
+```matlab
+trial.sptrain = sort(rand(poissrnd(0.1 * duration), 1) * duration);
+```
+
+```matlab
+trial.choice = round(rand);
+```
+
+```matlab
+T = expt.binfun(trial.duration);
+trial.eyepos = trial.eyepos(1:T, :); % Trim extra recording
+```
+
+Finally, we add the trial object to the experiment object with an associated trial index `kTrial`:
+```matlab
+expt = buildGLM.addTrial(expt, trial, kTrial);
+```
+
+Repeat this for all your trials, and your are done loading your data. See `tutorial*.m` for examples.
+
+Once you are comfortable with the data structure, you can avoid calling the `addCovariate*` functions, and directly plug-in your data into the structure via (see `tutorial_exampleData.m`):
+
+```matlab
+expt.trial = dataInTrialStruct; % only if you know what you are doing
 ```
 
 # Forming your feature space
@@ -96,12 +128,43 @@ The ultimate output is the design matrix:
 ```matlab
 dm = buildGLM.compileSparseDesignMatrix(dspec, trialIndices);
 ```
-where `trialIndices` are the trials to include in making the design matrix.
+where `trialIndices` are the trials to include in making the design matrix. This function is memory intensive, and could take a few seconds to complete.
 
-`dm` is a structure that contains the actual design matrix as `dm.X`. You can visualize this matrix
+`dm` is a structure that contains the actual design matrix as `dm.X`. You can visualize this matrix using **what**?
+
+If your design matrix is not very sparse (less than 10% sparse, for example), it's better to conver the design matrix to a full (dense) matrix for speed.
+```matlab
+dm.X = full(dm.X);
+```
 
 # Advanced feature engineering
 
-# Doing the actual regression
+# Regression analysis
 
-# Post regression reconstruction
+## Get the dependent variable
+You need
+```matlab
+%% Get the spike trains back to regress against
+y = buildGLM.getBinnedSpikeTrain(expt, 'sptrain', dm.trialIndices);
+```
+
+## Doing the actual regression
+You can do whatever you want to do the regression.
+Simple least squares can be done via:
+```matlab
+w = dm.X' * dm.X \ dm.X' * y;
+```
+
+Or you can use the `glmfit` in MATLAB statistics toolbox to do the Poisson regression.
+
+```matlab
+%% Maximum likelihood estimation using glmfit
+[w, dev, stats] = glmfit(dm.X, y, 'poisson', 'link', 'log');
+```
+
+# Post regression weight reconstruction
+Result of regression is a weight vector (and sometimes additional associated statistics in a vector or matrix) in the feature space. Hence, the weight vector is as long as the number of columns in the design matrix. In order to obtain meaningful temporal weights back corresponding to each covariate, use
+```matlab
+ws = buildGLM.combineWeights(dm, w);
+```
+It returns a structure that contains a time axis `ws.(covLabel).tr` and data `ws.(covLabel).data` for each `covLabel` in the design specification structure.

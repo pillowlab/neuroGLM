@@ -2,11 +2,11 @@ function y = getResponseVariable(expt, label, trialIdx)
 % y: a column vector or matrix representing the concatenated continuous variable
 
 if ~isstruct(expt)
-    error('first argument must be an experiment structure');
+    error('First argument must be an experiment structure');
 end
 
 if ~isfield(expt.type, label)
-    error('label [%s] is not registered in the experiment structure', label);
+    error('Label [%s] is not registered in the experiment structure', label);
 end
 
 %% Check that the label corresponds to a continuous variable

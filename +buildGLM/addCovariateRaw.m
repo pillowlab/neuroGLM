@@ -1,4 +1,5 @@
 function dspec = addCovariateRaw(dspec, covLabel, desc, varargin)
+% Add the continuous covariate without basis function (instantaneous rel)
 
 if nargin < 3; desc = covLabel; end
 

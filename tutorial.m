@@ -73,8 +73,15 @@ figure(742); clf; imagesc(X);
 %% Get the spike trains back to regress against
 y = buildGLM.getBinnedSpikeTrain(expt, 'sptrain', dm.trialIndices);
 
+%% Do some processing on the design matrix
+dm = buildGLM.removeConstantCols(dm);
+colIndices = buildGLM.getDesignMatrixColIndices(dspec, 'LFP');
+dm = buildGLM.zscoreDesignMatrix(dm, [colIndices{:}]);
+
 %% Maximum likelihood estimation using glmfit
 [w, dev, stats] = glmfit(dm.X, y, 'poisson', 'link', 'log');
+DC = w(1); w = w(2:end);
+DC_se = stats.se(1); stats.se = stats.se(2:end);
 
 %% Visualize
 ws = buildGLM.combineWeights(dm, w);

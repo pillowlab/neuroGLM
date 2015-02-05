@@ -46,3 +46,12 @@ used by combineWeights
 dm.X: [T x d] design matrix
 dm.trialIndices: [1 x nTri] which trials from the expt is used to generate this?
 dm.dspec: design spec structure
+
+z-score processing
+dm.zscore.mu: vector
+dm.zscore.sigma
+
+remove constant-cols
+dm.constCols: indices of columns that were removed
+(this is used in combineWeights to add zeros into the weight vector before
+ reconstruction)

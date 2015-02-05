@@ -37,3 +37,8 @@ end
 dm.X = growingX;
 dm.trialIndices = trialIndices;
 dm.dspec = dspec;
+
+%% Check sanity of the design
+if any(~isfinite(dm.X(:)))
+    warning('Design matrix contains NaN or Inf...this is not good!');
+end

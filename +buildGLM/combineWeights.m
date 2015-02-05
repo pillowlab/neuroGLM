@@ -1,4 +1,4 @@
-function wout = combineWeights(dm, w)
+function [wout] = combineWeights(dm, w)
 % Combine the weights per column in the design matrix per covariate
 %
 % Input
@@ -12,10 +12,19 @@ function wout = combineWeights(dm, w)
 dspec = dm.dspec;
 binSize = dspec.expt.binSize;
 
-if numel(w) == dm.dspec.edim + 1
-    DC = w(end);
-elseif numel(w) ~= dm.dspec.edim
-    error('Expecting w to be %d or %d dimension', dspec.edim, dspec.edim + 1);
+if isfield(dm, 'zscore') % undo z-score operation
+    w = (w .* dm.zscore.sigma(:)) + dm.zscore.mu(:);
+end
+
+if isfield(dm, 'constCols') % put back the constant columns
+    w2 = zeros(dm.dspec.edim, 1);
+    w2(~dm.constCols) = w; % first term is bias
+    w = w2;
+end
+
+if numel(w) ~= dm.dspec.edim
+    error('Expecting w to be %d dimension but it''s [%d]', ...
+	dspec.edim, numel(w));
 end
 
 startIdx = [1 (cumsum([dspec.covar(:).edim]) + 1)];
@@ -27,7 +36,7 @@ for kCov = 1:numel(dspec.covar)
 
     if isempty(basis)
 	w_sub = w(startIdx(kCov) + (1:covar.edim) - 1);
-	wout.(covar.label).tr = ((1:size(w_sub, 1)) - 1 + covar.offset) * binSize;
+	wout.(covar.label).tr = ((1:size(w_sub, 1))-1 + covar.offset) * binSize;
 	wout.(covar.label).data = w_sub;
 	continue;
     end
@@ -37,9 +46,10 @@ for kCov = 1:numel(dspec.covar)
     sdim = covar.edim / basis.edim;
     wout.(covar.label).data = zeros(size(basis.B, 1), sdim);
     for sIdx = 1:sdim
-	w_sub = w(startIdx(kCov) + (1:basis.edim) - 1 + basis.edim * (sIdx - 1));
+	w_sub = w(startIdx(kCov) + (1:basis.edim)-1 + basis.edim * (sIdx - 1));
 	w2_sub = sum(bsxfun(@times, basis.B, w_sub(:)'), 2);
 	wout.(covar.label).data(:, sIdx) = w2_sub;
     end
-    wout.(covar.label).tr = ((basis.tr(:, 1) + covar.offset) * binSize) * ones(1, sdim);
+    wout.(covar.label).tr = ...
+	((basis.tr(:, 1) + covar.offset) * binSize) * ones(1, sdim);
 end

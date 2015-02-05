@@ -180,6 +180,7 @@ dm.X = full(dm.X);
 ```
 
 # Advanced feature engineering
+*Coming soon!*
 
 # Regression analysis
 Once you have designed your features, and obtained the design matrix, it's finally time to do some analysis!

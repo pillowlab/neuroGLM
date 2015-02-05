@@ -38,3 +38,11 @@ basis.B: [T x edim] each column is the basis to be convolved with stimulus
 basis.edim: number of temporal basis functions
 basis.tr: [T x 1] temporal axis
 basis.(other_fields): any extra information
+
+== Design Matrix
+retunred by compileSparseDesignMatrix
+used by combineWeights
+
+dm.X: [T x d] design matrix
+dm.trialIndices: [1 x nTri] which trials from the expt is used to generate this?
+dm.dspec: design spec structure

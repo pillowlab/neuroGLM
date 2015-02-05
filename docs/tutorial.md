@@ -56,12 +56,11 @@ Then, each experimental variable is registered by indicating the type, label, an
 expt = buildGLM.registerContinuous(expt, 'LFP', 'Local Field Potential', 1); % continuous obsevation over time
 expt = buildGLM.registerContinuous(expt, 'eyepos', 'Eye Position', 2); % 2 dimensional observation
 expt = buildGLM.registerTiming(expt, 'dotson', 'Motion Dots Onset'); % events that happen 0 or more times per trial (sparse)
-expt = buildGLM.registerTiming(expt, 'dotsoff', 'Motion Dots Offset');
-expt = buildGLM.registerTiming(expt, 'saccade', 'Saccade Timing');
+expt = buildGLM.registerTiming(expt, 'saccade', 'Monkey's Saccade Timing');
 expt = buildGLM.registerSpikeTrain(expt, 'sptrain', 'Our Neuron'); % Spike train!!!
 expt = buildGLM.registerSpikeTrain(expt, 'sptrain2', 'Neighbor Neuron');
-expt = buildGLM.registerValue(expt, 'coh', 'Coherence'); % information on the trial, but not associated with time
-expt = buildGLM.registerValue(expt, 'choice', 'Direction of Choice');
+expt = buildGLM.registerValue(expt, 'coh', 'Dots Coherence'); % information on the trial, but not associated with time
+expt = buildGLM.registerValue(expt, 'choice', 'Direction of Monkey's Choice');
 ```
 
 Note that one can omit the prefix `buildGLM.` by importing the name space once via
@@ -71,12 +70,45 @@ import buildGLM.*
 
 ## Loading the data for each trial
 
-For each trial, we load the
+For each trial, we load each of the possible covariate into the experiment structure.
 
-Once you are comfortable with the data structure, you can avoid calling the `addCovariate*` functions, and directly plug-in your data into the structure via:
+For each trial, we make a temporary object `trial` to load the data:
+```matlab
+trial = buildGLM.newTrial(expt, duration);
+```
+where `duration` is the length of the current trial in `unitOfTime`.
+
+`trial` is a structure where you can need to add each of your experimental variables you have registered for the experiment as fields. Below are examples with randomly generated dummy data.
 
 ```matlab
-expt.trial = dataInTrialStruct;
+trial.dotson = rand() * duration; % timing variable
+```
+
+```matlab
+st = sort(rand(poissrnd(0.1 * duration), 1) * duration); % homogeneous Poisson process
+trial.sptrain = st; % spike train variable
+```
+
+```matlab
+trial.choice = round(rand); % value variable
+```
+
+```matlab
+T = expt.binfun(trial.duration); % number of bins for this trial
+trial.eyepos = randn(T, 1); % continuous variable
+```
+
+Finally, we add the trial object to the experiment object with an associated trial index `kTrial`:
+```matlab
+expt = buildGLM.addTrial(expt, trial, kTrial);
+```
+
+Repeat this for all your trials, and your are done loading your data. See `tutorial*.m` for examples.
+
+Once you are comfortable with the desired data structure, which is just a structure array of the trial objects, you can avoid calling the `newTrial` and `addTrial` functions, and directly plug-in your data into the structure via (see `tutorial_exampleData.m`):
+
+```matlab
+expt.trial = dataInTrialStruct; % only if you know what you are doing
 ```
 
 # Forming your feature space
@@ -88,20 +120,101 @@ We start by creating a **design specification object**.
 dspec = buildGLM.initDesignSpec(expt);
 ```
 You can have multiple such object per experiment to analyze your experiments in different ways and compare models.
+The design specification object `dspec` contains specification of how each covariate for the analysis is defined, and the information necessary for temporal embedding and/or nonlinear transformation.
 
-## Using temporal basis functions
+For a timing variable, the following syntax adds a **delta function** at the time of the event:
+```matlab
+dspec = buildGLM.addCovariateTiming(dspec, 'fpon', 'fpon', 'Fixation On');
+```
+However, this is seldom what you want. You probably want to have temporal basis to represent delayed effects of the covariate to the response variable.
+Let's make a set of 8 boxcar basis functions to cover 300 ms evenly:
+```matlab
+bs = basisFactory.makeSmoothTemporalBasis('boxcar', 300, 8, expt.binfun);
+```
+and use this to represent the effect of timing event instead:
+```matlab
+dspec = buildGLM.addCovariateTiming(dspec, 'fpon', 'fpon', 'Fixation On', bs);
+```
+
+If you want to use autoregressive point process modeling (often known as GLM in neuroscience) by adding the spike history filter, you can do the following:
+```matlab
+dspec = buildGLM.addCovariateSpiketrain(dspec, 'hist', 'sptrain', 'History filter');
+```
+This adds spike history filters with default history basis functions.
+You can do the same to add the coupling filters from other neurons (causal only by default):
+```matlab
+dspec = buildGLM.addCovariateSpiketrain(dspec, 'coupling', 'sptrain2', 'Coupling from neuron 2');
+```
+
+You can add continuous covariates with or without basis functions as well:
+```matlab
+dspec = buildGLM.addCovariateRaw(dspec, 'eyepos', 'Eye position effect', bs);
+```
+
+If you have two timing variables that represent a duration, and would like to represent it as a boxcar:
+```matlab
+%% Stimulus starts at `dotson` and ends at `dotsoff`
+dspec = buildGLM.addCovariateBoxcar(dspec, 'dots', 'dotson', 'dotsoff', 'Motion dots stim');
+```
+
+## More on temporal basis functions
+The `+basisFactory` package provides functions that generate basis function structures.
+Instead of a boxcar, you can use raised cosine basis functions:
+```matlab
+bs = basisFactory.makeSmoothTemporalBasis('raised cosine', 200, 10, expt.binfun);
+```
+The raised cosine functions are spaced such that they can represent linear functions as well as smoothly varying functions.
 
 ## Building the design matrix
 The ultimate output is the design matrix:
 ```matlab
 dm = buildGLM.compileSparseDesignMatrix(dspec, trialIndices);
 ```
-where `trialIndices` are the trials to include in making the design matrix.
+where `trialIndices` are the trials to include in making the design matrix. This function is memory intensive, and could take a few seconds to complete.
 
-`dm` is a structure that contains the actual design matrix as `dm.X`. You can visualize this matrix
+`dm` is a structure that contains the actual design matrix as `dm.X`. You can visualize this matrix using **what**?
+
+If your design matrix is not very sparse (less than 10% sparse, for example), it's better to conver the design matrix to a full (dense) matrix for speed.
+```matlab
+dm.X = full(dm.X);
+```
 
 # Advanced feature engineering
+*Coming soon!*
 
-# Doing the actual regression
+# Regression analysis
+Once you have designed your features, and obtained the design matrix, it's finally time to do some analysis!
 
-# Post regression reconstruction
+## Get the dependent variable
+You need to obtain the response variable of the same length as the number of rows in the design matrix to do regression. For **point process** regression, where we want to predict the observed spike train from covariates, this would be a finely binned spike train concatenated over the trials of interest:
+```matlab
+%% Get the spike trains back to regress against
+y = buildGLM.getBinnedSpikeTrain(expt, 'sptrain', dm.trialIndices);
+```
+
+For predicting some continuous observation, such as predicting the LFP, you can do:
+```matlab
+y = buildGLM.getResponseVariable(expt, 'LFP', dm.trialIndices);
+```
+Make sure your `y` is a column vector; `getResponseVariable` returns a matrix if the experimental variable is more than 1 dimension.
+
+## Doing the actual regression
+You can do whatever you want to do the regression.
+Simple least squares can be done via:
+```matlab
+w = dm.X' * dm.X \ dm.X' * y;
+```
+
+Or you can use the `glmfit` in MATLAB statistics toolbox to do the Poisson regression.
+
+```matlab
+%% Maximum likelihood estimation using glmfit
+[w, dev, stats] = glmfit(dm.X, y, 'poisson', 'link', 'log');
+```
+
+# Post regression weight reconstruction
+Result of regression is a weight vector (and sometimes additional associated statistics in a vector or matrix) in the feature space. Hence, the weight vector is as long as the number of columns in the design matrix. In order to obtain meaningful temporal weights back corresponding to each covariate, use
+```matlab
+ws = buildGLM.combineWeights(dm, w);
+```
+It returns a structure that contains a time axis `ws.(covLabel).tr` and data `ws.(covLabel).data` for each `covLabel` in the design specification structure.

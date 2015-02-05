@@ -71,7 +71,7 @@ figure(742); clf; imagesc(X);
 %buildGLM.visualizeDesignMatrix(dm, 1); % optionally plot the first trial
 
 %% Get the spike trains back to regress against
-y = buildGLM.getBinnedSpikeTrain(expt, 'sptrain', trialIndices);
+y = buildGLM.getBinnedSpikeTrain(expt, 'sptrain', dm.trialIndices);
 
 %% Maximum likelihood estimation using glmfit
 [w, dev, stats] = glmfit(dm.X, y, 'poisson', 'link', 'log');

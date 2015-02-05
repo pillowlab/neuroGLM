@@ -37,4 +37,3 @@ end
 dm.X = growingX;
 dm.trialIndices = trialIndices;
 dm.dspec = dspec;
-dm.type = 'sparse';

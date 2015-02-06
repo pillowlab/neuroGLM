@@ -1,4 +1,4 @@
-function y = getBinnedSpiketrain(expt, spLabel, trialIdx)
+function y = getBinnedSpikeTrain(expt, spLabel, trialIdx)
 % y: a sparse column vector representing the concatenated spike trains
 
 sts = cell(numel(trialIdx), 1);

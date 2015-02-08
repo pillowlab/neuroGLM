@@ -1,16 +1,18 @@
 function Cinv = buildPriorCovariance(prspec, prior_inds, prior_grp, hyperParameters)
 % Use prior spec to build a covariance matrix
+% Cinv = buildPriorCovariance(prspec, prior_inds, prior_grp, hyperParameters)
 %
-% Cinv = buildPriorCovariance(prSpec, prInds, prGrp)
 % prSpec is a prior "object" (it's a struct array)
 % prSpec
-% 		.label     - name of this prior (eg. 'Ridge1')
-%		.fun   	   - function to generate the prior covariance (eg. @ridge)
-% 		.dflthyprs - default hyperparameters (eg. .1)
-% 		.nhyprs    - number of hyperparameters required
-% 		.isInv     - boolean 
-% prInds - cell-array
-% prGrp  - which prior to use for each of prInds		
+% 	.label     - name of this prior (eg. 'Ridge1')
+% 	.fun   	   - function to generate the prior covariance (eg. @ridge)
+% 	.dflthyprs - default hyperparameters (eg. .1)
+% 	.nhyprs    - number of hyperparameters required
+% 	.isInv     - boolean 
+% prior_inds - cell-array
+% prior_grp  - which prior to use for each of prInds		
+% hyperparameters - optional, hyperparameters for the priors. If not provided,
+%	default hyperparameters stored in prior spec object are used
 
 if nargin > 4
     hyperParameters = [prspec(:).dflthyprs];

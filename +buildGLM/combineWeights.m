@@ -12,6 +12,11 @@ function [wout] = combineWeights(dm, w)
 dspec = dm.dspec;
 binSize = dspec.expt.binSize;
 
+if isfield(dm, 'biasCol') % undo z-score operation
+    wout.bias = w(dm.biasCol);
+    w(dm.biasCol) = [];
+end
+
 if isfield(dm, 'zscore') % undo z-score operation
     w = (w .* dm.zscore.sigma(:)) + dm.zscore.mu(:);
 end

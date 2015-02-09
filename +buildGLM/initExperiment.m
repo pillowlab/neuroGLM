@@ -19,7 +19,7 @@ expt.type = struct();
 expt.desc = struct();
 expt.dim = struct();
 
-if nargin > 2 || isempty(uniqueID)
+if nargin > 2 && ~isempty(uniqueID)
     expt.id = uniqueID;
 else
     [ret, hostname] = system('hostname');

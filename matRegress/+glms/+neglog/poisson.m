@@ -1,6 +1,6 @@
-function [L,dL,H] = poisson(wts,x,y,fnlin, inds)
+function [L,dL,H] = poisson(wts,x,y,fnlin,inds)
 % negative log-likelihood of data under Poisson model
-% [L,dL,ddL] = neglogli.poisson(wts,X,Y)
+% [L,dL,ddL] = neglogli.poisson(wts,X,Y,fnlin,inds)
 %
 % Compute negative log-likelihood of data under Poisson regression model,
 % plus gradient and Hessian
@@ -10,37 +10,62 @@ function [L,dL,H] = poisson(wts,x,y,fnlin, inds)
 %   X [N x m] - regressors
 %   Y [N x 1] - output (binary vector of 1s and 0s).
 %       fnlin - func handle for nonlinearity (must return f, df and ddf)
+%	 inds - (optional) indices to evaluate on subst of X and Y
 %
 % OUTPUT:
 %   L [1 x 1] - negative log-likelihood
 %  dL [m x 1] - gradient
 % ddL [m x m] - Hessian
-if nargin < 5
-    inds = 1:numel(y);
+
+if nargin > 4
+    x = x(inds, :);
+    y = y(inds);
 end
 
-xproj = x(inds,:)*wts;
+xproj = x*wts;
+dL = 0;
+H = 0;
 
 switch nargout
     case 1
         f = fnlin(xproj);
-        L = -y(inds)'*log(f) + sum(f); % neg log-likelihood
-        L = full(L);
+
+	nzidx = f ~= 0;
+	if any(y(~nzidx) ~= 0)
+	    L = Inf; % if rate is 0, nothing else can happen
+	else
+	    L = -y(nzidx)'*log(f(nzidx)) + sum(f); % neg log-likelihood
+	end
     case 2
         [f,df] = fnlin(xproj); % evaluate nonlinearity
+
+	nzidx = f ~= 0;
+	if any(y(~nzidx) ~= 0)
+	    L = Inf; % if rate is 0, nothing else can happen
+	else
+	    L = -y(nzidx)'*log(f(nzidx)) + sum(f); % neg log-likelihood
+	end
         
-        L = -y(inds)'*log(f) + sum(f); % neg log-likelihood
-        L = full(L);
-        dL = x(inds,:)'*((1 - y(inds)./f) .* df);
-        dL = full(dL);
+        dL = x(nzidx, :)' * ((1 - y(nzidx)./f(nzidx)) .* df(nzidx));
     case 3
         [f,df,ddf] = fnlin(xproj); % evaluate nonlinearity
-        
-        L = -y(inds)'*log(f) + sum(f); % neg log-likelihood
-        yf = y(inds)./f;
-        dL = x(inds,:)'*((1 - yf) .* df);
-        H = bsxfun(@times,ddf.*(1-yf)+df.*(y(inds)./f.^2.*df) ,x(inds,:))'*x(inds,:);
-        L = full(L);
-        dL = full(dL);
-        H = full(H);
+
+	nzidx = f ~= 0;
+	if any(y(~nzidx) ~= 0)
+	    L = Inf; % if rate is 0, nothing else can happen
+	else
+	    L = -y(nzidx)'*log(f(nzidx)) + sum(f); % neg log-likelihood
+	end
+
+        yf = y(nzidx) ./ f(nzidx);
+        dL = x(nzidx, :)' * ((1 - yf) .* df(nzidx));
+        %H = bsxfun(@times,ddf.*(1-yf)+df.*(y./f.^2.*df) ,x)'*x;
+        H = bsxfun(@times, ddf(nzidx) .* (1-yf) ...
+	    + (y(nzidx).*(df(nzidx)./f(nzidx)).^2), x(nzidx, :))' * x(nzidx,:);
 end
+
+if isnan(L) || any(isnan(dL)) || any(isnan(H(:)))
+    warning('glms:neglog:poisson:nan', 'NaN in negative log-likelihood');
+end
+
+L = full(L); dL = full(dL); H = full(H);

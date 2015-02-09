@@ -58,7 +58,7 @@ b = -1; % constant (DC term)
 % Make stimuli & simulate response
 Xdesign = [covariates(:).X];
 xproj = Xdesign*wts+b;
-pp = logsig(xproj);
+pp = tools.logistic(xproj);
 Y = rand(nTrials,1)<pp;
 
 % -- make plot ---
@@ -69,7 +69,7 @@ plot(tt,wts,'k');
 title('true filter');
 subplot(211);
 xpl = min(xproj):.1:max(xproj);
-plot(xproj,yy,'.',xpl,logsig(xpl), 'k');
+plot(xproj,yy,'.',xpl,tools.logistic(xpl), 'k');
 xlabel('input'); ylabel('response');
 fprintf('mean rate = %.1f (%d ones)\n', sum(yy)/nTrials, sum(yy));
 
@@ -125,7 +125,7 @@ hyprange = reshape([prspec(:).hyprsRnge], 2, [])';
 hgrid = glms.makeHyperParameterGrid(hyprange, options.ngridpoints, options.gridding);
 
 %% 
-
+% TODO: make these packages relative path
 addpath(genpath('~/Dropbox/MatlabCode/download/gpml-matlab-v3.5-2014-12-08/'))
 addpath ~/code/gpao/
 S = glms.learnHyperParametersActiveLearning(Xdesign,Y,options.distr, prspec, prior_inds, prior_grp, 'maxIter', 10);

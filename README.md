@@ -8,7 +8,7 @@ motor, reward variables) and internal (e.g., spike history, LFP
 signals) covariates of the response.
 
 This MATLAB code is a reference implementation for the analyses found
-in [Park et al 2014](http://pillowlab.princeton.edu/pubs/abs_ParkI_NN14.html).
+in [Park et al. 2014](http://pillowlab.princeton.edu/pubs/abs_ParkI_NN14.html).
 
 
 Downloading the repository
@@ -44,10 +44,10 @@ the time at which the targets appear, and the time,
 duration, and strength ("coherence") of the moving dots on each
 trial.   
 
+[Extra documentation](docs/tutorial.md)
 
+## Reference
 
-##Reference
-
-- I. M. Park, M.L.R Meister, A.C. Huk, &  J. W. Pillow
+- I. M. Park, M. L. R. Meister, A. C. Huk, &  J. W. Pillow
  (2014).
  [Deciphering the code for sensorimotor decision-making in parietal cortex](http://pillowlab.princeton.edu/pubs/abs_ParkI_NN14.html) Nature Neuroscience 17, 1395-1403.

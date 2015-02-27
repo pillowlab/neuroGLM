@@ -15,6 +15,8 @@ binSize = dspec.expt.binSize;
 if isfield(dm, 'biasCol') % undo z-score operation
     wout.bias = w(dm.biasCol);
     w(dm.biasCol) = [];
+    dm.zscore.sigma(dm.biasCol) = [];
+    dm.zscore.mu(dm.biasCol) = [];
 end
 
 if isfield(dm, 'zscore') % undo z-score operation

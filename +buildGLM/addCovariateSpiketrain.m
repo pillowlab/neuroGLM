@@ -1,4 +1,6 @@
 function dspec = addCovariateSpiketrain(dspec, covLabel, stimLabel, desc, basisStruct, varargin)
+% add spike train as covariate
+% dspec = addCovariateSpiketrain(dspec, covLabel, stimLabel, desc, basisStruct, varargin)
 
 if nargin < 4; desc = covLabel; end
 

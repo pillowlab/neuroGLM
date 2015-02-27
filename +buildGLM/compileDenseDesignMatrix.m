@@ -21,7 +21,8 @@ for kTrial = trialIndices
             continue;
         end
         
-        stim = covar.stim(expt.trial(kTrial), trialT(kTrial)); % either dense or sparse
+%         stim = covar.stim(expt.trial(kTrial), trialT(kTrial)); % either dense or sparse
+        stim = covar.stim(expt.trial(kTrial), expt); % either dense or sparse
         stim = full(stim);
         
         if isfield(covar, 'basis') && ~isempty(covar.basis)

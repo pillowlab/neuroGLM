@@ -23,7 +23,7 @@ for kTrial = trialIndices
             continue;
         end
         
-        stim = covar.stim(expt.trial(kTrial), nT); % either dense or sparse
+        stim = covar.stim(expt.trial(kTrial), expt); % either dense or sparse
         
         if isfield(covar, 'basis') && ~isempty(covar.basis)
             miniX(:, sidx) = basisFactory.convBasis(stim, covar.basis, covar.offset);

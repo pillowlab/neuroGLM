@@ -33,8 +33,7 @@ end
 assert(ischar(desc), 'Description must be a string');
 
 offset = 1; % Make sure to be causal. No instantaneous interaction allowed.
-
 binfun = dspec.expt.binfun;
-stimHandle = @(trial, expt) basisFactory.deltaStim(binfun(trial.(stimLabel)), binfun(trial.duration));
+stimHandle = @(trial, expt) basisFactory.deltaStim(binfun(trial.(stimLabel)+expt.binSize), binfun(trial.duration));
 
 dspec = buildGLM.addCovariate(dspec, covLabel, desc, stimHandle, basisStruct, offset, varargin{:});

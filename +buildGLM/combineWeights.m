@@ -13,10 +13,17 @@ dspec = dm.dspec;
 binSize = dspec.expt.binSize;
 
 if isfield(dm, 'biasCol') % undo z-score operation
-    wout.bias = w(dm.biasCol);
+    if isfield(dm, 'zscore') % remove bias from zscore
+        zmu  = dm.zscore.sigma(dm.biasCol);
+        zsig = dm.zscore.mu(dm.biasCol);
+        dm.zscore.sigma(dm.biasCol) = [];
+        dm.zscore.mu(dm.biasCol) = [];
+    else
+        zmu  = 1;
+        zsig = 1;
+    end
+    wout.bias = w(dm.biasCol)*zsig + zmu; % un-z-transform the bias
     w(dm.biasCol) = [];
-    dm.zscore.sigma(dm.biasCol) = [];
-    dm.zscore.mu(dm.biasCol) = [];
 end
 
 if isfield(dm, 'zscore') % undo z-score operation

@@ -4,7 +4,7 @@ function dm = compileDenseDesignMatrix(dspec, trialIndices)
 expt = dspec.expt;
 subIdxs = buildGLM.getGroupIndicesFromDesignSpec(dspec);
 
-trialT = ceil([expt.trial(trialIndices).duration]/expt.binSize);
+trialT = ceil([expt.trial(:).duration]/expt.binSize);
 totalT = sum(trialT);
 X      = zeros(totalT, dspec.edim);
 

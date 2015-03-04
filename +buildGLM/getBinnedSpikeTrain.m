@@ -3,7 +3,7 @@ function y = getBinnedSpikeTrain(expt, spLabel, trialIdx)
 
 sts = cell(numel(trialIdx), 1);
 binfun = expt.binfun;
-endTrialIndices = [0 cumsum(binfun([expt.trial(trialIdx).duration])) + 1];
+endTrialIndices = [0 cumsum(binfun([expt.trial(:).duration])) + 1];
 nT = endTrialIndices(end) - 1; % how many bins total?
 
 for kTrial = trialIdx(:)'

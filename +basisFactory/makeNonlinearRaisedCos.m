@@ -1,4 +1,4 @@
-function bases = makeNonlinearRaisedCos(nBases, binSize, endPoints, nlOffset)
+function bases = makeNonlinearRaisedCos(nBases, binSize, endPoints, nlOffset, varargin)
 % Make nonlinearly stretched basis consisting of raised cosines.
 % Nonlinear stretching allows faster changes near the event.
 %
@@ -8,6 +8,10 @@ function bases = makeNonlinearRaisedCos(nBases, binSize, endPoints, nlOffset)
 %          (i.e. center) of the last raised cosine basis vectors
 %   nlOffset: [1] offset for nonlinear stretching of x axis:  y = log(t+nlOffset)
 %         (larger nlOffset -> more nearly linear stretching)
+
+%   Optional Arguments (entered as argument pairs)
+%       'Normalize' (default = false) normalizes basis vectors to sum to 1   
+%       'Orthogonalize' (default = false) orthogonalizes the basis so B'*B=1
 %
 %  Outputs:  iht = time lattice on which basis is defined
 %            ihbasis = basis itself
@@ -15,6 +19,11 @@ function bases = makeNonlinearRaisedCos(nBases, binSize, endPoints, nlOffset)
 %
 %  Example call
 %  bases = basisFactory.makeNonlinearRaisedCos(10, 1, [0 500], 2);
+
+p = inputParser();
+p.addOptional('Normalize', false);
+p.addOptional('Orthogonalize', false);
+p.parse(varargin{:});
 
 % nonlinearity for stretching x axis (and its inverse)
 nlin = @(x)(log(x + 1e-20));
@@ -32,6 +41,14 @@ iht = (0:binSize:mxt)';
 ff = @(x,c,dc) (cos(max(-pi, min(pi, (x-c)*pi/dc/2))) + 1)/2;
 ihbasis = ff(repmat(nlin(iht + nlOffset), 1, nBases), repmat(ctrs, numel(iht), 1), db);
 ihctrs = invnl(ctrs);
+
+if p.Results.Normalize
+    ihbasis = bsxfun(@rdivide, ihbasis, sum(ihbasis));
+end
+
+if p.Results.Orthogonalize
+    ihbasis = orth(ihbasis);
+end
 
 bases.type = mfilename;
 bases.param.nBases = nBases;

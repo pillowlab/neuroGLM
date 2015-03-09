@@ -11,15 +11,16 @@ function [wout] = combineWeights(dm, w)
 
 dspec = dm.dspec;
 binSize = dspec.expt.binSize;
+wout = struct();
 
 if isfield(dm, 'biasCol') % undo z-score operation
-    if isfield(dm, 'zscore') % remove bias from zscore
+    if isfield(dm, 'zscore') && numel(dm.zscore.mu) == numel(w) % remove bias from zscore
         zmu  = dm.zscore.sigma(dm.biasCol);
         zsig = dm.zscore.mu(dm.biasCol);
         dm.zscore.sigma(dm.biasCol) = [];
         dm.zscore.mu(dm.biasCol) = [];
     else
-        zmu  = 1;
+        zmu  = 0;
         zsig = 1;
     end
     wout.bias = w(dm.biasCol)*zsig + zmu; % un-z-transform the bias
@@ -42,7 +43,6 @@ if numel(w) ~= dm.dspec.edim
 end
 
 startIdx = [1 (cumsum([dspec.covar(:).edim]) + 1)];
-wout = struct();
 
 for kCov = 1:numel(dspec.covar)
     covar = dspec.covar(kCov);

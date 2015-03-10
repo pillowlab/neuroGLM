@@ -4,14 +4,13 @@ function dm = compileDenseDesignMatrix(dspec, trialIndices)
 expt = dspec.expt;
 subIdxs = buildGLM.getGroupIndicesFromDesignSpec(dspec);
 
-trialT = ceil([expt.trial(:).duration]/expt.binSize);
+trialT = ceil([expt.trial(trialIndices).duration]/expt.binSize);
 totalT = sum(trialT);
 X      = zeros(totalT, dspec.edim);
 
-trialIndices = trialIndices(:)';
-
-for kTrial = trialIndices
-    ndx = sum(trialT(1:kTrial))-(trialT(kTrial)-1):sum(trialT(1:kTrial));
+for k = 1:numel(trialIndices)
+	kTrial = trialIndices(k);
+    ndx = sum(trialT(1:k))-(trialT(k)-1):sum(trialT(1:k));
         
     for kCov = 1:numel(dspec.covar) % for each covariate
         covar = dspec.covar(kCov);

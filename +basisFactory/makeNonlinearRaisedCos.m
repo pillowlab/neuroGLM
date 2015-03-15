@@ -2,13 +2,13 @@ function bases = makeNonlinearRaisedCos(nBases, binSize, endPoints, nlOffset, va
 % Make nonlinearly stretched basis consisting of raised cosines.
 % Nonlinear stretching allows faster changes near the event.
 %
+% Input
 % 	nBases: [1] - # of basis vectors
-%	binSize: time bin size (separation for representing basis
+%	binSize: time bin size (separation for representing basis)
 %   endPoints: [2 x 1] = 2-vector containg [1st_peak  last_peak], the peak
 %          (i.e. center) of the last raised cosine basis vectors
-%   nlOffset: [1] offset for nonlinear stretching of x axis:  y = log(t+nlOffset)
+%   nlOffset: [1] offset for nonlinear stretching of x axis: y = log(t+nlOffset)
 %         (larger nlOffset -> more nearly linear stretching)
-
 %   Optional Arguments (entered as argument pairs)
 %       'Normalize' (default = false) normalizes basis vectors to sum to 1   
 %       'Orthogonalize' (default = false) orthogonalizes the basis so B'*B=1
@@ -51,6 +51,7 @@ if p.Results.Orthogonalize
 end
 
 bases.type = mfilename;
+bases.param.varargin = varargin;
 bases.param.nBases = nBases;
 bases.param.binSize = binSize;
 bases.param.endPoints = endPoints;

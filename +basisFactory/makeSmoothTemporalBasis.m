@@ -1,4 +1,5 @@
 function bases = makeSmoothTemporalBasis(shape, duration, nBases, binfun, varargin)
+% bases = makeSmoothTemporalBasis(shape, duration, nBases, binfun, varargin)
 %
 % Input
 %   shape: 'raised cosine' or 'boxcar'
@@ -11,7 +12,7 @@ function bases = makeSmoothTemporalBasis(shape, duration, nBases, binfun, vararg
 %       'Orthogonalize' (default = false) orthogonalizes the basis so B'*B=1
 %
 % Output
-%   BBstm: basis vectors
+%   bases: bases structure
 
 p = inputParser();
 p.addOptional('Normalize', false);
@@ -62,6 +63,7 @@ if p.Results.Orthogonalize
 end
 
 bases.type = [shape '@' mfilename];
+bases.param.varargin = varargin;
 bases.param.shape = shape;
 bases.param.duration = duration;
 bases.param.nBases = nBases;

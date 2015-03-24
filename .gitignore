@@ -1,1 +1,21 @@
+# Compiled latex #
+###################
+*.aux
+*.log
+*.gz
+*.blg
+*.bbl
+
+# Exclude pdf versions of main text files #
+##########################################
+
+
+# OS generated files #
+######################
+.DS_Store
+.DS_Store?
+._*
+*~
+
+# why this one?
 tutorial.html

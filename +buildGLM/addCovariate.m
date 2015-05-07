@@ -64,7 +64,7 @@ else
 end
 
 if nargin >= 6
-    dspec.covar(newIdx).offset = offset;
+    dspec.covar(newIdx).offset = dspec.expt.binfun(offset);
 else
     dspec.covar(newIdx).offset = 0;
 end

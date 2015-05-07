@@ -57,5 +57,5 @@ bases.param.endPoints = endPoints;
 bases.param.nlOffset = nlOffset;
 bases.B = ihbasis;
 bases.edim = size(bases.B, 2);
-bases.tr = iht;
+bases.tr = iht/binSize;
 bases.centers = ihctrs;

@@ -13,5 +13,5 @@ for k = 1:numel(trialIdx)
 end
 
 sts = cell2mat(sts);
-
+sts(sts>nT) = [];
 y = sparse(sts, 1, 1, nT, 1);

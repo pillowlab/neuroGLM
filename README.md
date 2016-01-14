@@ -50,4 +50,4 @@ trial.
 
 - I. M. Park, M. L. R. Meister, A. C. Huk, &  J. W. Pillow
  (2014).
- [Deciphering the code for sensorimotor decision-making in parietal cortex](http://pillowlab.princeton.edu/pubs/abs_ParkI_NN14.html) Nature Neuroscience 17, 1395-1403.
+ [Encoding and decoding in parietal cortex during sensorimotor decision-making](http://pillowlab.princeton.edu/pubs/abs_ParkI_NN14.html) Nature Neuroscience 17, 1395-1403.

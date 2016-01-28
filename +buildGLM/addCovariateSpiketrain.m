@@ -1,6 +1,6 @@
 function dspec = addCovariateSpiketrain(dspec, covLabel, stimLabel, desc, basisStruct, varargin)
 
-if nargin < 4; desc = covLabel; end
+if nargin < 4 || isempty(desc); desc = covLabel; end
 
 if nargin < 5
     basisStruct = basisFactory.makeNonlinearRaisedCos(10, dspec.expt.binSize, [0 100], 2);

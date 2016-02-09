@@ -12,7 +12,7 @@ function dspec = addCovariate(dspec, covLabel, desc, stimHandle, basisStruct, of
 %	the output of the stimHandle. See +basisFactory functions (e.g. 
 %	+basisFactory.makeSmoothTemporalBasis)
 %   offset: [1] optional/default:0 - number of **time bins** to shift the
-%	regressors. Negative (positive) integers represent acausal (causal)
+%	regressors. Negative (positive) integers represent anti-causal (causal)
 %	effects.
 %   cond: @(trial) -> boolean optional: condition for which the covariate will
 %	be included. For example, if only trials where 'choice' is 1 to include

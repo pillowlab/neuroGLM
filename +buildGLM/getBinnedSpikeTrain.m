@@ -6,9 +6,10 @@ binfun = expt.binfun;
 endTrialIndices = [0 cumsum(binfun([expt.trial(trialIdx).duration]))];
 nT = endTrialIndices(end); % how many bins total?
 
-for kTrial = trialIdx(:)'
-    bst = endTrialIndices(kTrial) + binfun(expt.trial(kTrial).(spLabel));
-    sts{kTrial} = bst(:);
+for kTrialIdx = 1:numel(trialIdx)
+    kTrial = trialIdx(kTrialIdx);
+    bst = endTrialIndices(kTrialIdx) + binfun(expt.trial(kTrial).(spLabel));
+    sts{kTrialIdx} = bst(:);
 end
 
 sts = cell2mat(sts);

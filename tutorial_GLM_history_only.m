@@ -28,7 +28,7 @@ title('Interspike-interval (ISI) distribution');
 expt = buildGLM.initExperiment(unitOfTime, binSize);
 expt = buildGLM.registerSpikeTrain(expt, 'sptrain', 'simulated neuron');
 
-%% There's just onen trial
+%% There's just one trial
 expt.trial(1).sptrain = st;
 expt.trial(1).duration = T;
 

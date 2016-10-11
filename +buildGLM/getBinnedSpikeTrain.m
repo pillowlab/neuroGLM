@@ -1,6 +1,10 @@
 function y = getBinnedSpikeTrain(expt, spLabel, trialIdx)
 % y: a sparse column vector representing the concatenated spike trains
 
+if nargin < 3
+    trialIdx = 1:numel(expt.trial);
+end
+
 sts = cell(numel(trialIdx), 1);
 binfun = expt.binfun;
 endTrialIndices = [0 cumsum(binfun([expt.trial(trialIdx).duration]))];

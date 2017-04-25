@@ -56,5 +56,5 @@ for kCov = 1:numel(dspec.covar)
 	wout.(covar.label).data(:, sIdx) = w2_sub;
     end
     wout.(covar.label).tr = ...
-	(basis.tr(:, 1) + covar.offset * binSize) * ones(1, sdim);
+	(basis.tr(:, 1) + covar.offset) * binSize * ones(1, sdim);
 end

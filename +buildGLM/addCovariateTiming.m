@@ -1,6 +1,11 @@
 function dspec = addCovariateTiming(dspec, covLabel, stimLabel, desc, varargin)
 % Add a timing covariate based on the stimLabel.
 % dspec = addCovariateTiming(dspec, covLabel, stimLabel, desc, basisStruct, offset, cond, plotOpts);
+%
+% Input
+%   offset: [1] optional/default: 0 - number of **time bins** to shift the
+%	regressors. Negative (positive) integers represent anti-causal (causal)
+%	effects.
 
 if ~isstruct(dspec)
     error('First argument must be a design specification structure');

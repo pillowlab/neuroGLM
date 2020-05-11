@@ -1,4 +1,9 @@
 function dspec = addCovariateBoxcar(dspec, covLabel, startLabel, endLabel, desc, varargin)
+%
+% Input
+%   offset: [1] optional/default: 0 - number of **time bins** to shift the
+%	regressors. Negative (positive) integers represent anti-causal (causal)
+%	effects.
 
 if nargin < 5; desc = covLabel; end
 
